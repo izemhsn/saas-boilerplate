@@ -1,0 +1,28 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    env_file:
+      - path: apps/api/.env
+        required: false # still starts if you haven't created .env yet
+    environment:
+      PORT: 3000 # overrides PORT from .env so it always matches the port mapping below
+    ports:
+      - "3000:3000"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - api # nginx resolves the "api" hostname at startup
+
+  marketing:
+    build:
+      context: .
+      dockerfile: apps/marketing/Dockerfile
+    ports:
+      - "8081:80"

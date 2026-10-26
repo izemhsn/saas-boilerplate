@@ -1,0 +1,13 @@
+**/node_modules
+**/dist
+**/.turbo
+**/.astro
+**/.env
+**/.env.*
+!**/.env.example
+**/*.log
+**/.vscode
+.git
+out
+**/Dockerfile*
+compose*.yaml

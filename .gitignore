@@ -142,3 +142,15 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Astro generated types
+.astro/
+
+# Vite SSR build output
+dist-ssr
+
+# Editor / OS files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
