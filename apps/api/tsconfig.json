@@ -1,16 +1,11 @@
 {
+  "extends": "@saas/config-typescript/node.json",
   "compilerOptions": {
-    "target": "ES2023",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    // Paths and types stay here: paths are relative to this file,
+    // and types come from packages installed in this app.
     "rootDir": "src",
     "outDir": "dist",
-    "types": ["node"],
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "noEmitOnError": true,
-    "sourceMap": true
+    "types": ["node"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

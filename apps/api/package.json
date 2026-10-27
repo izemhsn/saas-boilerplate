@@ -7,7 +7,8 @@
     "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -17,9 +18,12 @@
     "express": "^5.3.0"
   },
   "devDependencies": {
+    "@saas/config-eslint": "workspace:*",
+    "@saas/config-typescript": "workspace:*",
     "@types/express": "^5.0.6",
     "@types/node": "^24.19.2",
+    "eslint": "catalog:",
     "tsx": "^4.23.15",
-    "typescript": "5.9.3"
+    "typescript": "catalog:"
   }
 }

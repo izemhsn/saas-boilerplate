@@ -4,3 +4,8 @@ packages:
   - 'packages/*'
 allowBuilds:
   esbuild: true
+
+# Versions shared by every package. Packages use "catalog:" instead of a version number.
+catalog:
+  typescript: 6.0.3
+  eslint: ^10.13.0

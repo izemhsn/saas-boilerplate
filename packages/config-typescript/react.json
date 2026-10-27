@@ -1,0 +1,15 @@
+{
+  // For React apps bundled by Vite. Vite does the building, so tsc only checks types.
+  "extends": "./base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "allowArbitraryExtensions": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true
+  }
+}

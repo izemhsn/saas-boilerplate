@@ -1,0 +1,11 @@
+{
+  // For apps that run in Node and are compiled with tsc (e.g. the API).
+  "extends": "./base.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "noEmitOnError": true,
+    "sourceMap": true
+  }
+}

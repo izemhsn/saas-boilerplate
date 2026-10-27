@@ -1,0 +1,14 @@
+{
+  // Settings shared by every app. App-specific settings go in node.json / react.json.
+  "compilerOptions": {
+    "target": "ES2023",
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleDetection": "force",
+
+    /* Catch common mistakes */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  }
+}
