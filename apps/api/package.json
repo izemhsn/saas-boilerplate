@@ -5,10 +5,11 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -22,8 +23,11 @@
     "@saas/config-typescript": "workspace:*",
     "@types/express": "^5.0.6",
     "@types/node": "^24.19.2",
+    "@types/supertest": "^7.2.1",
     "eslint": "catalog:",
+    "supertest": "^7.3.1",
     "tsx": "^4.23.15",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

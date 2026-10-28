@@ -11,6 +11,7 @@
       "passThroughEnv": ["PORT", "WEB_ORIGIN"]
     },
     "lint": {},
-    "typecheck": {}
+    "typecheck": {},
+    "test": {}
   }
 }

@@ -1,0 +1,5 @@
+{
+  // Used by "pnpm build": same as tsconfig.json, but leaves test files out of dist.
+  "extends": "./tsconfig.json",
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts"]
+}
