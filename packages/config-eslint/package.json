@@ -4,12 +4,14 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./astro": "./astro.js",
     "./node": "./node.js",
     "./react": "./react.js"
   },
   "dependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "catalog:",
+    "eslint-plugin-astro": "^3.2.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.13.0",
