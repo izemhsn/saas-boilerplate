@@ -1,3 +1,3 @@
-import config from '@saas/config-eslint/node'
+import config from '@saas/config-eslint/node';
 
-export default config
+export default config;

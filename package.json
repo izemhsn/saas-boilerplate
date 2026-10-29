@@ -9,7 +9,9 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [],
   "author": "",
@@ -27,6 +29,7 @@
   "packageManager": "pnpm@12.14.0",
   "type": "module",
   "devDependencies": {
+    "prettier": "^3.9.10",
     "turbo": "^2.11.9",
     "typescript": "catalog:"
   }

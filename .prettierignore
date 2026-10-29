@@ -1,0 +1,7 @@
+# Prettier already skips node_modules and everything in .gitignore.
+
+# Written by pnpm
+pnpm-lock.yaml
+
+# Written by drizzle-kit, never edit by hand
+packages/db/migrations

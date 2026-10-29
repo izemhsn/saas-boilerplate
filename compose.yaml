@@ -10,7 +10,7 @@ services:
       PORT: 3000 # overrides PORT from .env so it always matches the port mapping below
       DATABASE_URL: postgres://postgres:postgres@db:5432/saas-boilerplate # "db" is the database service's name inside Docker
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       db:
         condition: service_healthy # wait for the database to be ready before starting the API
@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
     ports:
-      - "8080:80"
+      - '8080:80'
     depends_on:
       - api # nginx resolves the "api" hostname at startup
 
@@ -29,12 +29,12 @@ services:
       context: .
       dockerfile: apps/marketing/Dockerfile
     ports:
-      - "8081:80"
+      - '8081:80'
 
   db:
     image: postgres:18-alpine # pinned so a new major version doesn't arrive by surprise
     ports:
-      - "5432:5432" # lets apps running on your machine (pnpm dev) reach the database
+      - '5432:5432' # lets apps running on your machine (pnpm dev) reach the database
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -42,7 +42,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql # keeps the data when containers are removed
     healthcheck: # "healthy" once Postgres accepts connections; the API waits for this
-      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "saas-boilerplate"]
+      test: ['CMD', 'pg_isready', '-U', 'postgres', '-d', 'saas-boilerplate']
       interval: 5s
       timeout: 5s
       retries: 5
