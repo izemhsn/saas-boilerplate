@@ -8,8 +8,12 @@ services:
         required: false # still starts if you haven't created .env yet
     environment:
       PORT: 3000 # overrides PORT from .env so it always matches the port mapping below
+      DATABASE_URL: postgres://postgres:postgres@db:5432/saas-boilerplate # "db" is the database service's name inside Docker
     ports:
       - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy # wait for the database to be ready before starting the API
 
   web:
     build:
@@ -26,3 +30,22 @@ services:
       dockerfile: apps/marketing/Dockerfile
     ports:
       - "8081:80"
+
+  db:
+    image: postgres:18-alpine # pinned so a new major version doesn't arrive by surprise
+    ports:
+      - "5432:5432" # lets apps running on your machine (pnpm dev) reach the database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: saas-boilerplate
+    volumes:
+      - db-data:/var/lib/postgresql # keeps the data when containers are removed
+    healthcheck: # "healthy" once Postgres accepts connections; the API waits for this
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "saas-boilerplate"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:

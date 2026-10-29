@@ -4,7 +4,8 @@ WORKDIR /app
 
 COPY . .
 RUN pnpm install --frozen-lockfile
-RUN pnpm --filter @saas/api build
+# The "..." also builds the packages the API depends on (like @saas/db)
+RUN pnpm --filter @saas/api... build
 
 EXPOSE 3000
 CMD ["node", "apps/api/dist/index.js"]

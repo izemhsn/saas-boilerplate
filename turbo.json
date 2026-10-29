@@ -6,12 +6,17 @@
       "outputs": ["dist/**", ".astro/**"]
     },
     "dev": {
+      "dependsOn": ["^build"],
       "cache": false,
       "persistent": true,
       "passThroughEnv": ["PORT", "WEB_ORIGIN"]
     },
     "lint": {},
-    "typecheck": {},
-    "test": {}
+    "typecheck": {
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    }
   }
 }

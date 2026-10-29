@@ -1,0 +1,14 @@
+{
+  "extends": "@saas/config-typescript/node.json",
+  "compilerOptions": {
+    // Paths and types stay here: paths are relative to this file,
+    // and types come from packages installed in this package.
+    "rootDir": "src",
+    "outDir": "dist",
+    "types": ["node"],
+    // Writes .d.ts files to dist, so apps that import @saas/db get its types.
+    "declaration": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
