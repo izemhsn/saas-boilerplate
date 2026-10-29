@@ -1,3 +1,3 @@
-import config from '@saas/config-eslint/react'
+import config from '@saas/config-eslint/react';
 
-export default config
+export default config;

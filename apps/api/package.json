@@ -16,6 +16,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@saas/db": "workspace:*",
     "express": "^5.3.0"
   },
   "devDependencies": {
