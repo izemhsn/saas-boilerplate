@@ -9,7 +9,7 @@
       "dependsOn": ["^build"],
       "cache": false,
       "persistent": true,
-      "passThroughEnv": ["PORT", "WEB_ORIGIN"]
+      "passThroughEnv": ["PORT"]
     },
     "lint": {},
     "typecheck": {

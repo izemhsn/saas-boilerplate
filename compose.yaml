@@ -3,17 +3,32 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+    init: true # Node ignores Docker's stop signal when it runs alone, so a tiny helper passes it on and the API stops right away
     env_file:
       - path: apps/api/.env
         required: false # still starts if you haven't created .env yet
     environment:
+      NODE_ENV: production # tells Express (and other libraries) to run in production mode
       PORT: 3000 # overrides PORT from .env so it always matches the port mapping below
       DATABASE_URL: postgres://postgres:postgres@db:5432/saas-boilerplate # "db" is the database service's name inside Docker
     ports:
       - '3000:3000'
     depends_on:
+      migrate:
+        condition: service_completed_successfully # wait until the tables are created before starting the API
+
+  # Runs the database migrations once, then stops.
+  # Uses the API image because it already has the code and drizzle-kit installed.
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    command: ['pnpm', '--filter', '@saas/db', 'db:migrate']
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/saas-boilerplate
+    depends_on:
       db:
-        condition: service_healthy # wait for the database to be ready before starting the API
+        condition: service_healthy # wait for the database to be ready before migrating
 
   web:
     build:
