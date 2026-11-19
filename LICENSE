@@ -1,21 +1,101 @@
-MIT License
+SaaS Boilerplate Commercial License
 
-Copyright (c) 2026 El Houssaine Izem
+Copyright (c) 2026 El Houssaine Izem. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This license is an agreement between you (the person or company that bought a
+license, "you") and El Houssaine Izem (the "Licensor") about the source code,
+documentation and other files in this repository (the "Software").
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+By downloading, copying or using the Software, you agree to these terms. If you
+do not agree, do not use the Software.
+
+The source code is public so you can look at it before you buy. Without a
+license, you may only read the code and run it on your own computer to decide
+whether to buy it. Any other use, including building, running or selling an End
+Product, or copying the code into another project, needs a paid license. Being
+publicly visible does not make the Software open source or free to use.
+
+
+1. DEFINITIONS
+
+"End Product" means an application, website or online service that you build
+with the Software and that gives its users features of its own, beyond the
+Software itself. People use an End Product; they do not get the Software to
+build their own software with.
+
+"Authorized Users" means you and, if you are a company, your employees and
+contractors while they work on your End Products.
+
+
+2. WHAT YOU MAY DO
+
+Once you have paid for a license, the Licensor gives you a non-exclusive,
+non-transferable, worldwide and perpetual license to:
+
+  a) use, copy and modify the Software;
+
+  b) use the Software to build, run and sell an unlimited number of End
+     Products, for yourself or for your clients;
+
+  c) let your Authorized Users do (a) and (b) for you.
+
+If you build an End Product for a client, you may hand over that End Product,
+including its source code, to the client. The client may use and change it only
+as part of that End Product, and must follow section 3.
+
+
+3. WHAT YOU MAY NOT DO
+
+You may not:
+
+  a) sell, sublicense, rent, share, give away or publish the Software, or any
+     part or changed version of it, on its own;
+
+  b) use the Software, or any part or changed version of it, in a boilerplate,
+     starter kit, template, theme, code generator or any other product whose
+     main purpose is to help other people build software;
+
+  c) put the Software's source code anywhere that people other than your
+     Authorized Users (and clients under section 2) can access it, including
+     public code repositories;
+
+  d) transfer your license to someone else;
+
+  e) remove or change this license or the copyright notices in the Software.
+
+
+4. OWNERSHIP
+
+The Licensor keeps all rights, title and ownership of the Software. You own the
+code you write yourself. The parts of your End Products that come from the
+Software stay covered by this license.
+
+
+5. THIRD-PARTY SOFTWARE
+
+The Software uses open-source packages (listed in the package.json files) that
+have their own licenses. This license does not change the terms of those
+packages.
+
+
+6. TERMINATION
+
+If you break any of these terms, your license ends automatically. You must then
+stop using the Software and delete all your copies of it. Sections 4, 7 and 8
+still apply after the license ends.
+
+
+7. NO WARRANTY
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+
+8. LIMITATION OF LIABILITY
+
+IN NO EVENT SHALL THE LICENSOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SOFTWARE. IF THE LICENSOR IS FOUND LIABLE ANYWAY, THE TOTAL LIABILITY IS LIMITED
+TO THE AMOUNT YOU PAID FOR YOUR LICENSE.

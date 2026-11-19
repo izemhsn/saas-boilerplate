@@ -7,7 +7,11 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
   server: {
-    proxy: { '/api': 'http://localhost:3000' },
+    proxy: {
+      // Send /api requests to the API. xfwd adds the X-Forwarded-* headers,
+      // so the API sees the visitor's IP like it does behind nginx in Docker.
+      '/api': { target: 'http://localhost:3000', xfwd: true },
+    },
   },
   test: {
     environment: 'jsdom', // a fake browser, so components can render in Node

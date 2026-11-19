@@ -8,4 +8,7 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @saas/api... build
 
 EXPOSE 3000
+# Run as the image's built-in "node" user instead of root, so a bug in the API
+# can't change files in the container. Installing above still needed root.
+USER node
 CMD ["node", "apps/api/dist/index.js"]

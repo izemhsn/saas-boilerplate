@@ -1,31 +1,41 @@
+# The database password comes from POSTGRES_PASSWORD, and falls back to "postgres" on your machine.
+# On a real server, set a strong one before the first start: export POSTGRES_PASSWORD=...
+# (use only letters and numbers, because it is also put inside DATABASE_URL below).
+# Postgres only reads it when it first creates the db-data volume. To change it later,
+# see "On a real server" in the README.
+
 services:
   api:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
     init: true # Node ignores Docker's stop signal when it runs alone, so a tiny helper passes it on and the API stops right away
+    restart: unless-stopped # start the API again if it crashes
     env_file:
       - path: apps/api/.env
         required: false # still starts if you haven't created .env yet
     environment:
       NODE_ENV: production # tells Express (and other libraries) to run in production mode
       PORT: 3000 # overrides PORT from .env so it always matches the port mapping below
-      DATABASE_URL: postgres://postgres:postgres@db:5432/saas-boilerplate # "db" is the database service's name inside Docker
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/saas-boilerplate # "db" is the database service's name inside Docker
     ports:
-      - '3000:3000'
+      # "127.0.0.1:" means only this machine can reach port 3000, not the internet.
+      # Visitors reach the API through the web app's nginx (/api), which talks to it inside Docker.
+      - '127.0.0.1:3000:3000'
     depends_on:
       migrate:
         condition: service_completed_successfully # wait until the tables are created before starting the API
 
   # Runs the database migrations once, then stops.
   # Uses the API image because it already has the code and drizzle-kit installed.
+  # No "restart" here: it's meant to stop when it's done.
   migrate:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
     command: ['pnpm', '--filter', '@saas/db', 'db:migrate']
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/saas-boilerplate
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/saas-boilerplate
     depends_on:
       db:
         condition: service_healthy # wait for the database to be ready before migrating
@@ -34,6 +44,7 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
     ports:
       - '8080:80'
     depends_on:
@@ -43,16 +54,20 @@ services:
     build:
       context: .
       dockerfile: apps/marketing/Dockerfile
+    restart: unless-stopped
     ports:
       - '8081:80'
 
   db:
     image: postgres:18-alpine # pinned so a new major version doesn't arrive by surprise
+    restart: unless-stopped
     ports:
-      - '5432:5432' # lets apps running on your machine (pnpm dev) reach the database
+      # Lets apps running on your machine (pnpm dev) reach the database.
+      # "127.0.0.1:" keeps it off the internet: Docker's ports skip firewalls like ufw.
+      - '127.0.0.1:5432:5432'
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: saas-boilerplate
     volumes:
       - db-data:/var/lib/postgresql # keeps the data when containers are removed

@@ -6,6 +6,13 @@ import { apiRouter } from './routes.js';
 // The app is created here but not started, so tests can use it without opening a port.
 export const app = express();
 
+// The API runs behind one proxy (nginx in Docker, Vite in dev). This tells Express to trust
+// the X-Forwarded-* headers from that one proxy, so req.ip is the visitor's IP and
+// req.secure is true for https visitors (secure cookies need this).
+// The number is how many proxies sit in front of the API. If you add another one on the
+// server (for example Caddy or a load balancer for https), change it to 2.
+app.set('trust proxy', 1);
+
 app.use(express.json());
 
 app.get('/', (_req, res) => {

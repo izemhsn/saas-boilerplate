@@ -1,8 +1,7 @@
 {
   "name": "@saas/api",
+  "private": true,
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc -p tsconfig.build.json",
@@ -11,9 +10,6 @@
     "lint": "eslint .",
     "test": "vitest run"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "type": "module",
   "dependencies": {
     "@saas/db": "workspace:*",
