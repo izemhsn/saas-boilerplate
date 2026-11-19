@@ -10,3 +10,7 @@ export const db = drizzle({ client: pool });
 
 // Re-export the tables so apps can write: import { db, users } from '@saas/db'
 export * from './schema.js';
+
+// Re-export the query helpers too, so apps use the same drizzle-orm copy as this package
+// and don't need their own drizzle-orm dependency: import { db, eq, users } from '@saas/db'
+export { and, asc, desc, eq, or, sql } from 'drizzle-orm';

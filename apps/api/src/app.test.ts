@@ -2,14 +2,7 @@ import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import { app } from './app.js';
 
-describe('GET /api/health', () => {
-  it('returns status ok', async () => {
-    const res = await request(app).get('/api/health');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual({ status: 'ok' });
-  });
-});
+// App-wide behavior. Each feature's own tests live next to it in modules/.
 
 describe('unknown routes', () => {
   it('return a JSON 404', async () => {
