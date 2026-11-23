@@ -11,12 +11,18 @@ services:
       dockerfile: apps/api/Dockerfile
     init: true # Node ignores Docker's stop signal when it runs alone, so a tiny helper passes it on and the API stops right away
     restart: unless-stopped # start the API again if it crashes
+    # BETTER_AUTH_SECRET comes from apps/api/.env (on a server too, see the README).
+    # Don't add it under "environment" below: a line there always replaces the .env value,
+    # even when it's empty, so the secret would go missing.
     env_file:
       - path: apps/api/.env
-        required: false # still starts if you haven't created .env yet
+        required: false # so "docker compose build" works without .env (CI has none). The API itself stops with a clear message if the secret is missing.
     environment:
       NODE_ENV: production # tells Express (and other libraries) to run in production mode
       PORT: 3000 # overrides PORT from .env so it always matches the port mapping below
+      # The URL people open in the browser. On your machine that's nginx on port 8080.
+      # On a real server, export BETTER_AUTH_URL=https://your-domain.com first (see the README).
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:8080}
       DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/saas-boilerplate # "db" is the database service's name inside Docker
     ports:
       # "127.0.0.1:" means only this machine can reach port 3000, not the internet.
@@ -33,7 +39,11 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    command: ['pnpm', '--filter', '@saas/db', 'db:migrate']
+    # verify-deps-before-run=false: by default pnpm tries to reinstall packages before running a
+    # script. The container runs as the "node" user, which can't change node_modules, so that
+    # install fails with a scary (but harmless) error. The image already has everything installed.
+    command:
+      ['pnpm', '--config.verify-deps-before-run=false', '--filter', '@saas/api', 'db:migrate']
     environment:
       DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/saas-boilerplate
     depends_on:

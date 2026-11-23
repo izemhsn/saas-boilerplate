@@ -6,6 +6,15 @@ import { z } from 'zod';
 const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3000), // .env values are text, coerce turns "3000" into 3000
   DATABASE_URL: z.url(),
+  // Better Auth reads these two itself (see lib/auth.ts); they're checked here so a missing one
+  // stops the API at startup. The secret signs session cookies, so it must be long and random.
+  BETTER_AUTH_SECRET: z
+    .string({ error: 'Missing. Add it to apps/api/.env, see .env.example' })
+    .min(
+      32,
+      'Empty or too short (at least 32 characters). See apps/api/.env.example to generate one',
+    ),
+  BETTER_AUTH_URL: z.url(),
 });
 
 const result = envSchema.safeParse(process.env);

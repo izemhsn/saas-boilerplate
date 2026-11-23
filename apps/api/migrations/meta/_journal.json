@@ -15,6 +15,20 @@
       "when": 1795118068116,
       "tag": "0001_short_nekra",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795123186132,
+      "tag": "0002_drop_old_users",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795123193200,
+      "tag": "0003_auth_tables",
+      "breakpoints": true
     }
   ]
 }

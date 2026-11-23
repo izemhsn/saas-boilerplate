@@ -34,9 +34,9 @@ jobs:
         # so the timeout stops it instead of hanging. Generate renames on your machine.
         timeout-minutes: 3
         run: |
-          pnpm --filter @saas/db db:generate
-          git status --porcelain packages/db/migrations
-          test -z "$(git status --porcelain packages/db/migrations)"
+          pnpm --filter @saas/api db:generate
+          git status --porcelain apps/api/migrations
+          test -z "$(git status --porcelain apps/api/migrations)"
         env:
           # db:generate doesn't connect to a database, but drizzle.config.ts needs a value
           DATABASE_URL: postgres://ci:ci@localhost:5432/ci

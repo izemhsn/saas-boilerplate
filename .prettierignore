@@ -4,4 +4,4 @@
 pnpm-lock.yaml
 
 # Written by drizzle-kit, never edit by hand
-packages/db/migrations
+apps/api/migrations

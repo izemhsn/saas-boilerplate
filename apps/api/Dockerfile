@@ -4,8 +4,7 @@ WORKDIR /app
 
 COPY . .
 RUN pnpm install --frozen-lockfile
-# The "..." also builds the packages the API depends on (like @saas/db)
-RUN pnpm --filter @saas/api... build
+RUN pnpm --filter @saas/api build
 
 EXPOSE 3000
 # Run as the image's built-in "node" user instead of root, so a bug in the API
