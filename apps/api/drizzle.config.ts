@@ -3,11 +3,10 @@ import { defineConfig } from 'drizzle-kit';
 
 // Settings for the drizzle-kit commands (db:generate, db:migrate, db:studio).
 
-// On your machine, read DATABASE_URL from the API's .env so it lives in one place.
+// On your machine, read DATABASE_URL from .env (the same file the API uses).
 // Skipped when the file doesn't exist (e.g. in Docker, where compose.yaml sets DATABASE_URL).
-const envFile = '../../apps/api/.env';
-if (existsSync(envFile)) {
-  process.loadEnvFile(envFile);
+if (existsSync('.env')) {
+  process.loadEnvFile('.env');
 }
 
 if (!process.env.DATABASE_URL) {
@@ -16,7 +15,7 @@ if (!process.env.DATABASE_URL) {
 
 export default defineConfig({
   dialect: 'postgresql',
-  schema: './src/schema.ts', // where the tables are defined
+  schema: './src/db/schema.ts', // where the tables are defined
   out: './migrations', // where generated SQL migration files go (commit these)
   dbCredentials: { url: process.env.DATABASE_URL },
 });

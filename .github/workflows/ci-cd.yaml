@@ -22,9 +22,24 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 24
+          cache: pnpm # reuses downloaded packages from the last run, so installs are faster
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Check migrations match the schema
+        # Generates a migration from schema.ts. If that creates a new file, someone changed
+        # the schema but forgot to run db:generate, so this step fails.
+        # Renaming a column or table makes db:generate ask a question, which CI can't answer,
+        # so the timeout stops it instead of hanging. Generate renames on your machine.
+        timeout-minutes: 3
+        run: |
+          pnpm --filter @saas/api db:generate
+          git status --porcelain apps/api/migrations
+          test -z "$(git status --porcelain apps/api/migrations)"
+        env:
+          # db:generate doesn't connect to a database, but drizzle.config.ts needs a value
+          DATABASE_URL: postgres://ci:ci@localhost:5432/ci
 
       - name: Format check
         run: pnpm format:check
@@ -41,11 +56,21 @@ jobs:
       - name: Build
         run: pnpm build
 
-  # Job 2: put the new code on the server
+  # Job 2: check every Docker image still builds (runs at the same time as Job 1)
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v5
+
+      - name: Build the images
+        run: docker compose build
+
+  # Job 3: put the new code on the server
   # Turned off for now. To turn it on: set up the server, add the
   # SERVER_HOST, SERVER_USER and SERVER_SSH_KEY secrets, then uncomment this.
   # deploy:
-  #   needs: ci # only runs if Job 1 passed
+  #   needs: [ci, docker] # only runs if Jobs 1 and 2 passed
   #   if: github.ref == 'refs/heads/main' # only for the main branch
   #   runs-on: ubuntu-latest
   #   steps:
