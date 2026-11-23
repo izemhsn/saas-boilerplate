@@ -18,6 +18,14 @@ const envSchema = z.object({
   // Turns the API docs at /api/docs on or off (see apiDocsEnabled in lib/openapi.ts, which reads
   // it). Optional: by default they're on while developing and off in production.
   API_DOCS_ENABLED: z.enum(['true', 'false']).optional(),
+  // The email server (see lib/email.ts, which reads these). In development that's Mailpit,
+  // started with "docker compose up -d mailpit".
+  SMTP_HOST: z.string().min(1, 'Missing. Add it to apps/api/.env, see .env.example'),
+  SMTP_PORT: z.coerce.number().int().positive(),
+  SMTP_USER: z.string().optional(), // not needed for Mailpit
+  SMTP_PASS: z.string().optional(),
+  // Who emails come from, like "Acme <no-reply@acme.com>"
+  EMAIL_FROM: z.string().min(1, 'Missing. Add it to apps/api/.env, see .env.example'),
 });
 
 const result = envSchema.safeParse(process.env);

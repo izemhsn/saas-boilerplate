@@ -40,8 +40,10 @@ This starts the database, creates the tables (the `migrate` service), then start
 - Web app: http://localhost:8080
 - Marketing site: http://localhost:8081
 - API: http://localhost:3000
+- Emails the app sends (Mailpit, a fake inbox): http://localhost:8025
 
-The API (3000) and the database (5432) only accept connections from your own machine.
+The API (3000), the database (5432) and Mailpit (8025, 1025) only accept connections from your
+own machine.
 Visitors reach the API through the web app, which forwards `/api` requests to it.
 
 **On a real server**, set a strong database password before the first start (letters and numbers
@@ -57,6 +59,9 @@ docker compose up -d --build
 Also create `apps/api/.env` on the server with its own `BETTER_AUTH_SECRET` (never reuse the one
 from your computer). Git ignores `.env`, so `git pull` keeps it. If you change the secret later,
 everyone has to sign in again.
+
+Set up a real email provider too, or nobody can verify their email or reset their password (see
+[Sending emails](#sending-emails)).
 
 Postgres only reads `POSTGRES_PASSWORD` the first time it creates its data volume. To change the
 password later, change it inside the database too, then restart with the new value:
@@ -82,10 +87,10 @@ docker compose up -d
    cp apps/api/.env.example apps/api/.env
    ```
 
-3. Start only the database in Docker:
+3. Start the database and Mailpit (a fake inbox for the emails the app sends) in Docker:
 
    ```sh
-   docker compose up -d db
+   docker compose up -d db mailpit
    ```
 
 4. Create the tables:
@@ -104,6 +109,58 @@ docker compose up -d
    - Marketing site: http://localhost:4321
    - API: http://localhost:3000
    - API docs (every endpoint, with "try it"): http://localhost:5173/api/docs
+   - Emails the app sends (Mailpit): http://localhost:8025
+
+## Sign up and sign in
+
+Accounts use an email and a password ([Better Auth](https://www.better-auth.com), set up in
+`apps/api/src/lib/auth.ts`):
+
+- **Sign up** sends a verification email. People can't sign in until they click its link, which
+  also signs them in. Signing in before that sends a new link.
+- **Signing up with an email that already has an account** looks like it worked, so nobody can find
+  out which emails have accounts. Nothing is created, and the real owner gets an email saying they
+  already have an account.
+- **Forgot password** emails a link to choose a new password. Choosing one signs the account out
+  on every device.
+- Both links work for 1 hour, and only once.
+
+The emails' wording is in `apps/api/src/lib/auth-emails.ts`.
+
+## Sending emails
+
+The API sends emails over SMTP (`apps/api/src/lib/email.ts`), which almost every email provider
+supports, so switching providers means changing settings, not code.
+
+**On your machine**, emails go to [Mailpit](https://mailpit.axllent.org), a fake inbox that runs in
+Docker. Open http://localhost:8025 to read them. Nothing reaches a real inbox, so any email address
+works for testing.
+
+**On a real server**, pick a provider and verify your domain with it. Any provider with SMTP works,
+for example:
+
+- [Resend](https://resend.com/pricing): simple setup, free tier.
+- [Postmark](https://postmarkapp.com/pricing): focused on sign-up and password emails reaching the inbox.
+- [Amazon SES](https://aws.amazon.com/ses/pricing/): cheapest at high volume, more setup.
+
+Then point the API at it. Like `BETTER_AUTH_URL`, the host and port are exported in the shell,
+because `compose.yaml` uses Mailpit unless told otherwise:
+
+```sh
+export SMTP_HOST=smtp.your-provider.com
+export SMTP_PORT=587   # or 465
+docker compose up -d --build
+```
+
+Put the login and the sender in `apps/api/.env` on the server (never in `compose.yaml`):
+
+```sh
+SMTP_USER=your-smtp-username
+SMTP_PASS=your-smtp-password
+EMAIL_FROM="Your App <no-reply@your-domain.com>"
+```
+
+If the API still sends to Mailpit in production, it prints a warning when it starts.
 
 ## How the API is organized
 
@@ -122,7 +179,7 @@ apps/api/src/
 │       ├── users.docs.ts     how its endpoints appear in the API docs
 │       └── users.test.ts
 ├── middleware/      requireAuth (signed-in users only), validate (checks the request body), not-found, error-handler
-└── lib/             auth (Better Auth setup), HttpError, shared pieces for the API docs
+└── lib/             auth (Better Auth setup) and its emails, email sending, HttpError, shared pieces for the API docs
 ```
 
 A feature with its own logic also gets a `<feature>.service.ts` (business logic and database

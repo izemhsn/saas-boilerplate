@@ -2,6 +2,11 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { openAPI } from 'better-auth/plugins';
 import { accounts, db, sessions, users, verifications } from '../db/index.js';
+import {
+  sendExistingAccountEmail,
+  sendPasswordResetEmail,
+  sendVerificationEmail,
+} from './auth-emails.js';
 import { apiDocsEnabled } from './openapi.js';
 
 // Better Auth handles sign up, sign in, sign out and sessions for us.
@@ -20,7 +25,48 @@ export const auth = betterAuth({
   }),
 
   // Sign up and sign in with an email and a password.
-  emailAndPassword: { enabled: true },
+  // The emails below are sent without waiting for them (no "await"), on purpose: the request
+  // answers right away, and "forgot password" takes the same time whether or not the email
+  // has an account, so nobody can use it to find out who has one. Failures are logged.
+  emailAndPassword: {
+    enabled: true,
+    // People must click the link in the verification email before they can sign in
+    requireEmailVerification: true,
+
+    // "Forgot password" (POST /api/auth/request-password-reset): email a link to choose a new one
+    sendResetPassword: async ({ user, url }) => {
+      sendPasswordResetEmail(user.email, url).catch((error) => {
+        console.error('Could not send the password reset email:', error);
+      });
+    },
+    resetPasswordTokenExpiresIn: 60 * 60, // 1 hour, as the email says
+    // After a reset, sign out every device: if someone else knew the old password, they're out
+    revokeSessionsOnPasswordReset: true,
+
+    // Signing up with an email that already has an account looks like it worked (so nobody can
+    // find out who has an account), but nothing is created. Tell the real owner by email, so
+    // someone who forgot they had an account isn't left waiting for a verification email.
+    // The link goes to the web app (BETTER_AUTH_URL); point it at the sign-in page once it exists.
+    onExistingUserSignUp: async ({ user }) => {
+      sendExistingAccountEmail(user.email, process.env.BETTER_AUTH_URL ?? '/').catch((error) => {
+        console.error('Could not send the existing account email:', error);
+      });
+    },
+  },
+
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      sendVerificationEmail(user.email, url).catch((error) => {
+        console.error('Could not send the verification email:', error);
+      });
+    },
+    sendOnSignUp: true,
+    // Signing in before verifying sends a new link, in case the first one expired or got lost
+    sendOnSignIn: true,
+    // Clicking the link also signs the person in
+    autoSignInAfterVerification: true,
+    expiresIn: 60 * 60, // 1 hour, as the email says
+  },
 
   plugins: [
     // Describes every /api/auth/* endpoint in OpenAPI format, so they show up in our API docs

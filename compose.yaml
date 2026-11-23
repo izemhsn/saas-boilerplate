@@ -11,9 +11,9 @@ services:
       dockerfile: apps/api/Dockerfile
     init: true # Node ignores Docker's stop signal when it runs alone, so a tiny helper passes it on and the API stops right away
     restart: unless-stopped # start the API again if it crashes
-    # BETTER_AUTH_SECRET comes from apps/api/.env (on a server too, see the README).
-    # Don't add it under "environment" below: a line there always replaces the .env value,
-    # even when it's empty, so the secret would go missing.
+    # BETTER_AUTH_SECRET (and SMTP_USER/SMTP_PASS for email) come from apps/api/.env, on a server
+    # too (see the README). Don't add them under "environment" below: a line there always
+    # replaces the .env value, even when it's empty, so the secret would go missing.
     env_file:
       - path: apps/api/.env
         required: false # so "docker compose build" works without .env (CI has none). The API itself stops with a clear message if the secret is missing.
@@ -24,6 +24,10 @@ services:
       # On a real server, export BETTER_AUTH_URL=https://your-domain.com first (see the README).
       BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:8080}
       DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/saas-boilerplate # "db" is the database service's name inside Docker
+      # The email server. On your machine that's Mailpit (below), a fake inbox.
+      # On a real server, export SMTP_HOST and SMTP_PORT for your email provider first (see the README).
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
     ports:
       # "127.0.0.1:" means only this machine can reach port 3000, not the internet.
       # Visitors reach the API through the web app's nginx (/api), which talks to it inside Docker.
@@ -31,6 +35,8 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully # wait until the tables are created before starting the API
+      mailpit:
+        condition: service_started
 
   # Runs the database migrations once, then stops.
   # Uses the API image because it already has the code and drizzle-kit installed.
@@ -86,6 +92,17 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  # A fake email inbox: it catches every email the API sends (sign-up verification, password
+  # reset...) and shows them at http://localhost:8025. Nothing reaches a real inbox.
+  # Pinned so a new version doesn't arrive by surprise.
+  mailpit:
+    image: axllent/mailpit:v1.33.1
+    restart: unless-stopped
+    ports:
+      # "127.0.0.1:" keeps both off the internet, like the database.
+      - '127.0.0.1:8025:8025' # the inbox web page
+      - '127.0.0.1:1025:1025' # where the API sends emails when you run pnpm dev (inside Docker it uses mailpit:1025)
 
 volumes:
   db-data:
