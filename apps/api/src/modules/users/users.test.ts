@@ -50,4 +50,19 @@ describe('GET /api/users/me', () => {
       updatedAt: '2026-01-01T00:00:00.000Z',
     });
   });
+
+  it("doesn't send columns that aren't listed in the route", async () => {
+    // A column added to the users table later, like a plugin's "role" or a Stripe id
+    const userWithExtraColumns = { ...fakeUser, role: 'admin', stripeCustomerId: 'cus_123' };
+    vi.spyOn(auth.api, 'getSession').mockResolvedValue({
+      user: userWithExtraColumns,
+      session: fakeSession,
+    });
+
+    const res = await request(app).get('/api/users/me');
+
+    expect(res.status).toBe(200);
+    expect(res.body).not.toHaveProperty('role');
+    expect(res.body).not.toHaveProperty('stripeCustomerId');
+  });
 });
