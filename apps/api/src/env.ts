@@ -15,6 +15,9 @@ const envSchema = z.object({
       'Empty or too short (at least 32 characters). See apps/api/.env.example to generate one',
     ),
   BETTER_AUTH_URL: z.url(),
+  // Turns the API docs at /api/docs on or off (see apiDocsEnabled in lib/openapi.ts, which reads
+  // it). Optional: by default they're on while developing and off in production.
+  API_DOCS_ENABLED: z.enum(['true', 'false']).optional(),
 });
 
 const result = envSchema.safeParse(process.env);

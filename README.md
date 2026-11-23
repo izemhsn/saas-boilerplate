@@ -103,6 +103,7 @@ docker compose up -d
    - Web app: http://localhost:5173 (sends `/api` requests to the API)
    - Marketing site: http://localhost:4321
    - API: http://localhost:3000
+   - API docs (every endpoint, with "try it"): http://localhost:5173/api/docs
 
 ## How the API is organized
 
@@ -112,19 +113,41 @@ apps/api/src/
 ├── app.ts           builds the app: middleware, then /api routes, then the 404 and error handlers
 ├── env.ts           checks the environment variables at startup
 ├── routes.ts        mounts every feature under /api
-├── modules/         one folder per feature (health, users, ...)
+├── docs.ts          the API docs at /api/docs, built from every feature's *.docs.ts
+├── db/              database tables (schema.ts) and client
+├── modules/         one folder per feature
+│   ├── health/
 │   └── users/
-│       ├── users.routes.ts    URLs and thin handlers: read the request, call the service, send the response
-│       ├── users.service.ts   business logic and database queries (no req/res here)
-│       ├── users.schemas.ts   zod schemas for the request data
+│       ├── users.routes.ts   URLs and thin handlers: read the request, call the service, send the response
+│       ├── users.docs.ts     how its endpoints appear in the API docs
 │       └── users.test.ts
-├── middleware/      validate (checks the request body), not-found, error-handler
-└── lib/             small helpers, like HttpError
+├── middleware/      requireAuth (signed-in users only), validate (checks the request body), not-found, error-handler
+└── lib/             auth (Better Auth setup), HttpError, shared pieces for the API docs
 ```
 
-To add a feature, create a folder in `modules/` with the same files, then add one line to `routes.ts`.
-In a service, `throw new HttpError(404, 'Not found')` to send that status to the client.
+A feature with its own logic also gets a `<feature>.service.ts` (business logic and database
+queries, no `req`/`res` there) and a `<feature>.schemas.ts` (zod schemas for the request data).
+`users` doesn't need them: Better Auth already loads the signed-in user.
+
+To add a feature, create a folder in `modules/` with the files it needs, then add its router in
+`routes.ts` and its docs in `docs.ts`. To remove one, delete its folder and its line in both files.
+In a service, `throw new HttpError(404, 'Project not found')` to send that status to the client.
 Invalid input (a zod error) becomes a 400 automatically.
+
+### API docs
+
+Open http://localhost:5173/api/docs while developing to see every endpoint in one place and try it
+from the browser. Sign in there first (`POST /api/auth/sign-in/email`) to call endpoints that need a
+signed-in user: the browser keeps the session cookie.
+
+The docs are off in production by default, which includes `docker compose up` (it sets
+`NODE_ENV=production`). The page lists every endpoint to anyone who opens it, and it loads its script
+from a CDN on the same site as the session cookie. To turn them on anyway, for example on a staging
+server only your team can reach, set `API_DOCS_ENABLED=true` in `apps/api/.env`.
+
+The page is built from two sources: each module's `*.docs.ts` file, and Better Auth, which describes
+its own `/api/auth/*` endpoints. The raw description is at `/api/docs/openapi.json`, which tools like
+Postman or Insomnia can import. When you add or change an endpoint, update its `*.docs.ts` file too.
 
 ## Changing the database
 
