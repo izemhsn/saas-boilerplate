@@ -8,5 +8,6 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @saas/marketing build
 
 # Step 2: serve the built files with nginx
-FROM nginx:stable-alpine
+# Pinned to the 1.30 stable branch: patch updates arrive, a new version doesn't arrive by surprise
+FROM nginx:1.30-alpine
 COPY --from=build /app/apps/marketing/dist /usr/share/nginx/html
